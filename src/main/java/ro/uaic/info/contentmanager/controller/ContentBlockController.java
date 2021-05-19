@@ -66,7 +66,6 @@ public class ContentBlockController {
         courseObj.getCourseContentBlocks().add(position, contentBlock);
 
         ContentBlock createdBlock = contentBlockRepository.save(contentBlock);
-        courseRepository.save(courseObj);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}").buildAndExpand(createdBlock.getId()).toUri();
@@ -89,14 +88,52 @@ public class ContentBlockController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ContentBlock> updateContentBlock(@RequestBody ContentBlock contentBlock, @PathVariable Integer id) {
-        if (contentBlock.getId() == null || !contentBlock.getId().equals(id)) {
+    public ResponseEntity<ContentBlock> updateContentBlock(@RequestBody Map<String, String> contentBlockJson, @PathVariable Integer id) {
+        Integer contentBlockId;
+        Integer courseId;
+        String type;
+        String content;
+        Integer position;
+
+        try
+        {
+            contentBlockId = Integer.parseInt(contentBlockJson.get("contentBlockId"));
+            courseId = Integer.parseInt(contentBlockJson.get("courseId"));
+            type = contentBlockJson.get("type");
+            content = contentBlockJson.get("content");
+            position = contentBlockJson.get("position") != null ?
+                    Integer.parseInt(contentBlockJson.get("position")) : null;
+        } catch (Exception e)
+        {
             return ResponseEntity.badRequest().build();
         }
 
-        if (contentBlockRepository.findById(id).isEmpty()) {
+        if (type == null || content == null)
+            return ResponseEntity.badRequest().build();
+
+        if (contentBlockRepository.findById(contentBlockId).isEmpty())
             return ResponseEntity.notFound().build();
-        }
+
+        var contentBlock = contentBlockRepository.findById(contentBlockId).get();
+
+        var courseOpt = courseRepository.findById(courseId);
+
+        if (courseOpt.isEmpty())
+            return ResponseEntity.notFound().build();
+
+        var courseObj = courseOpt.get();
+        if (position == null)
+            position = courseObj.getCourseContentBlocks().size();
+
+        if (position < 0 || position > courseObj.getCourseContentBlocks().size())
+            return ResponseEntity.badRequest().build();
+
+
+        contentBlock.getCourse().getCourseContentBlocks().remove(contentBlock);
+        contentBlock.setContent(content);
+        contentBlock.setType(type);
+        contentBlock.setCourse(courseObj);
+        courseObj.getCourseContentBlocks().add(position, contentBlock);
 
         ContentBlock updatedContentBlock = contentBlockRepository.save(contentBlock);
 

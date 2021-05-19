@@ -14,6 +14,7 @@ public class Course {
     private String pageTitle;
 
     @OneToMany(mappedBy = "course")
+    @OrderColumn(name = "position")
     List<ContentBlock> courseContentBlocks;
 
     public Course() {
