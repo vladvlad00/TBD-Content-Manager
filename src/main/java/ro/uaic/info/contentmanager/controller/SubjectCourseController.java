@@ -64,4 +64,22 @@ public class SubjectCourseController {
         }
         return ResponseEntity.ok(foundCourse.get().getSubjectCourses());
     }
+
+    @DeleteMapping("/subject/{subjectId}/course/{courseId}")
+    public ResponseEntity<Course> deleteSubjectCourse(@PathVariable Integer subjectId,@PathVariable Integer courseId){
+        Optional<Subject> subjectOpt=subjectRepository.findById(subjectId);
+        Optional<Course> courseOpt=courseRepository.findById(courseId);
+
+        if(subjectOpt.isEmpty()||courseOpt.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+
+        Subject subject=subjectOpt.get();
+        Course course=courseOpt.get();
+
+        if(!subject.getSubjectCourses().contains(course)&&
+         course.getSubject().equals(subject)){
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
