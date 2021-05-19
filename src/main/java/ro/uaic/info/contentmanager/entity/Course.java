@@ -1,9 +1,8 @@
 package ro.uaic.info.contentmanager.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
 
 @Entity
 public class Course {
@@ -14,6 +13,10 @@ public class Course {
     private String name;
 
     private String pageTitle;
+
+    @ManyToOne
+    @JoinColumn(name="subjectId")
+    Subject subject;
 
     public Course() {
     }
@@ -46,5 +49,13 @@ public class Course {
 
     public void setPageTitle(String pageTitle) {
         this.pageTitle = pageTitle;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
     }
 }

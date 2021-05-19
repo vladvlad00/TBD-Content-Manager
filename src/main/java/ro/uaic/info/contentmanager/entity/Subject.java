@@ -1,9 +1,9 @@
 package ro.uaic.info.contentmanager.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 public class Subject {
@@ -13,6 +13,10 @@ public class Subject {
     private Integer id;
 
     private String name;
+
+    @JsonIgnore
+    @OneToMany(mappedBy="subject")
+    Set<Course> subjectCourses;
 
     public Integer getId() {
         return id;
@@ -28,5 +32,13 @@ public class Subject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<Course> getSubjectCourses() {
+        return subjectCourses;
+    }
+
+    public void setSubjectCourses(Set<Course> subjectCourses) {
+        this.subjectCourses = subjectCourses;
     }
 }
