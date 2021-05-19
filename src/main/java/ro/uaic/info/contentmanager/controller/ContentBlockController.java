@@ -11,56 +11,56 @@ import java.net.URI;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path="/content_block")
+@RequestMapping(path = "/content_block")
 public class ContentBlockController {
     @Autowired
     private ContentBlockRepository contentBlockRepository;
 
     @PostMapping("/")
-    public ResponseEntity<ContentBlock> createContentBlock(@RequestBody ContentBlock contentBlock){
-        if(contentBlock.getId()!=null&&contentBlockRepository.findById(contentBlock.getId()).isPresent())
+    public ResponseEntity<ContentBlock> createContentBlock(@RequestBody ContentBlock contentBlock) {
+        if (contentBlock.getId() != null && contentBlockRepository.findById(contentBlock.getId()).isPresent())
             return ResponseEntity.badRequest().build();
 
-        ContentBlock createdBlock=contentBlockRepository.save(contentBlock);
+        ContentBlock createdBlock = contentBlockRepository.save(contentBlock);
 
-        URI uri= ServletUriComponentsBuilder.fromCurrentRequest()
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}").buildAndExpand(createdBlock.getId()).toUri();
         return ResponseEntity.created(uri).body(createdBlock);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Iterable<ContentBlock>> listAllContentBlocks(){
-        Iterable<ContentBlock> foundContentBlocks=contentBlockRepository.findAll();
+    public ResponseEntity<Iterable<ContentBlock>> listAllContentBlocks() {
+        Iterable<ContentBlock> foundContentBlocks = contentBlockRepository.findAll();
         return ResponseEntity.ok(foundContentBlocks);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ContentBlock> listContentBlock(@PathVariable Integer id){
-        Optional<ContentBlock> foundContentBlock=contentBlockRepository.findById(id);
-        if(foundContentBlock.isEmpty()){
+    public ResponseEntity<ContentBlock> listContentBlock(@PathVariable Integer id) {
+        Optional<ContentBlock> foundContentBlock = contentBlockRepository.findById(id);
+        if (foundContentBlock.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return  ResponseEntity.ok(foundContentBlock.get());
+        return ResponseEntity.ok(foundContentBlock.get());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ContentBlock> updateContentBlock(@RequestBody ContentBlock contentBlock,@PathVariable Integer id){
-        if(contentBlock.getId() == null || !contentBlock.getId().equals(id)){
-            return  ResponseEntity.badRequest().build();
+    public ResponseEntity<ContentBlock> updateContentBlock(@RequestBody ContentBlock contentBlock, @PathVariable Integer id) {
+        if (contentBlock.getId() == null || !contentBlock.getId().equals(id)) {
+            return ResponseEntity.badRequest().build();
         }
 
-        if(contentBlockRepository.findById(id).isEmpty()){
+        if (contentBlockRepository.findById(id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        ContentBlock updatedContentBlock=contentBlockRepository.save(contentBlock);
+        ContentBlock updatedContentBlock = contentBlockRepository.save(contentBlock);
 
         return ResponseEntity.ok(updatedContentBlock);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ContentBlock> deleteContentBlock(@PathVariable Integer id){
-        if(contentBlockRepository.findById(id).isEmpty()){
+    public ResponseEntity<ContentBlock> deleteContentBlock(@PathVariable Integer id) {
+        if (contentBlockRepository.findById(id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
