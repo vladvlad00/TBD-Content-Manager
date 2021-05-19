@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import ro.uaic.info.contentmanager.entity.ContentBlock;
 import ro.uaic.info.contentmanager.entity.Course;
+import ro.uaic.info.contentmanager.repository.ContentBlockRepository;
 import ro.uaic.info.contentmanager.repository.CourseRepository;
 
 import java.net.URI;
@@ -13,8 +15,12 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/course")
 public class CourseController {
+
     @Autowired
     private CourseRepository courseRepository;
+
+    @Autowired
+    private ContentBlockRepository contentBlockRepository;
 
     @PostMapping("/")
     public ResponseEntity<Course> createCourse(@RequestBody Course course) {
@@ -61,8 +67,15 @@ public class CourseController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Course> deleteCourse(@PathVariable Integer id)
     {
-        if (courseRepository.findById(id).isEmpty())
+        Optional<Course> courseOpt = courseRepository.findById(id);
+
+        if (courseOpt.isEmpty())
             return ResponseEntity.notFound().build();
+
+        Course courseObj = courseOpt.get();
+
+        for(ContentBlock content : courseObj.getCourseContentBlocks())
+            contentBlockRepository.deleteById(content.getId());
 
         courseRepository.deleteById(id);
         return ResponseEntity.noContent().build();

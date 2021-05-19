@@ -91,9 +91,7 @@ public class SubjectController
                     contentBlockRepository.deleteById(contentBlock.getId());
                 courseRepository.deleteById(course.getId());
             }
-
         }
-
         subjectRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
