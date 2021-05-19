@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import ro.uaic.info.contentmanager.entity.ContentBlock;
+import ro.uaic.info.contentmanager.entity.Course;
 import ro.uaic.info.contentmanager.entity.Subject;
 import ro.uaic.info.contentmanager.repository.SubjectRepository;
 
@@ -67,8 +69,18 @@ public class SubjectController
     @DeleteMapping("/{id}")
     public ResponseEntity<Subject> deleteSubject(@PathVariable Integer id)
     {
-        if (subjectRepository.findById(id).isEmpty())
+        Optional<Subject> subjectOpt = subjectRepository.findById(id);
+
+        if (subjectOpt.isEmpty())
             return ResponseEntity.notFound().build();
+
+        Subject subjectObj = subjectOpt.get();
+
+//        if(subjectObj.getSubjectCourses() != null)
+//        {
+//            for(Course course : subjectObj.getSubjectCourses())
+//                for(ContentBlock contentBlock : course.get)
+//        }
 
         subjectRepository.deleteById(id);
         return ResponseEntity.noContent().build();
