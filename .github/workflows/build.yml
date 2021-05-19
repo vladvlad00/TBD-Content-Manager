@@ -1,10 +1,10 @@
 name: Java CI
 
 on:
-  #push:
-  #  branches:
-  #    - master
-  #    - development
+  push:
+    branches:
+      - master
+      - development
   pull_request:
     branches:
       - master
