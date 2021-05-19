@@ -1,9 +1,7 @@
 package ro.uaic.info.contentmanager.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Course {
@@ -14,6 +12,9 @@ public class Course {
     private String name;
 
     private String pageTitle;
+
+    @OneToMany(mappedBy = "course")
+    List<ContentBlock> courseContentBlocks;
 
     public Course() {
     }
@@ -46,5 +47,15 @@ public class Course {
 
     public void setPageTitle(String pageTitle) {
         this.pageTitle = pageTitle;
+    }
+
+    public List<ContentBlock> getCourseContentBlocks()
+    {
+        return courseContentBlocks;
+    }
+
+    public void setCourseContentBlocks(List<ContentBlock> courseContentBlocks)
+    {
+        this.courseContentBlocks = courseContentBlocks;
     }
 }

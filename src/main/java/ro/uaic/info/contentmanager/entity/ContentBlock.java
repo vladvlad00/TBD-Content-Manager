@@ -1,5 +1,7 @@
 package ro.uaic.info.contentmanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 /*
@@ -19,12 +21,25 @@ public class ContentBlock {
     @Lob
     private String content;
 
-    public Integer getId() {
-        return id;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "courseId")
+    @MapsId("courseId")
+    Course course;
+
+    public ContentBlock()
+    {
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public ContentBlock(String type, String content, Course course)
+    {
+        this.type = type;
+        this.content = content;
+        this.course = course;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public String getType() {
@@ -43,8 +58,13 @@ public class ContentBlock {
         this.content = content;
     }
 
+    public Course getCourse()
+    {
+        return course;
+    }
 
-
-
-
+    public void setCourse(Course course)
+    {
+        this.course = course;
+    }
 }

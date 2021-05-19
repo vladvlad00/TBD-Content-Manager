@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ro.uaic.info.contentmanager.entity.ContentBlock;
 import ro.uaic.info.contentmanager.repository.ContentBlockRepository;
+import ro.uaic.info.contentmanager.repository.CourseRepository;
 
 import java.net.URI;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -16,12 +18,55 @@ public class ContentBlockController {
     @Autowired
     private ContentBlockRepository contentBlockRepository;
 
+    @Autowired
+    private CourseRepository courseRepository;
+
     @PostMapping("/")
-    public ResponseEntity<ContentBlock> createContentBlock(@RequestBody ContentBlock contentBlock) {
-        if (contentBlock.getId() != null && contentBlockRepository.findById(contentBlock.getId()).isPresent())
+    public ResponseEntity<ContentBlock> createContentBlock(@RequestBody Map<String,String> contentBlockJson)
+    {
+        Integer contentBlockId;
+        Integer courseId;
+        String type;
+        String content;
+        Integer position;
+
+        try
+        {
+            contentBlockId = contentBlockJson.get("contentBlockId") != null ?
+                    Integer.parseInt(contentBlockJson.get("contentBlockId")) : null;
+            courseId = Integer.parseInt(contentBlockJson.get("courseId"));
+            type = contentBlockJson.get("type");
+            content = contentBlockJson.get("content");
+            position = contentBlockJson.get("position") != null ?
+                    Integer.parseInt(contentBlockJson.get("position")) : null;
+        } catch (Exception e)
+        {
+            return ResponseEntity.badRequest().build();
+        }
+
+        if (type == null || content == null)
             return ResponseEntity.badRequest().build();
 
+        if (contentBlockId != null && contentBlockRepository.findById(contentBlockId).isPresent())
+            return ResponseEntity.badRequest().build();
+
+        var courseOpt = courseRepository.findById(courseId);
+
+        if (courseOpt.isEmpty())
+            return ResponseEntity.notFound().build();
+
+        var courseObj = courseOpt.get();
+        if (position == null)
+            position = courseObj.getCourseContentBlocks().size();
+
+        if (position < 0 || position > courseObj.getCourseContentBlocks().size())
+            return ResponseEntity.badRequest().build();
+
+        var contentBlock = new ContentBlock(type, content, courseObj);
+        courseObj.getCourseContentBlocks().add(position, contentBlock);
+
         ContentBlock createdBlock = contentBlockRepository.save(contentBlock);
+        courseRepository.save(courseObj);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}").buildAndExpand(createdBlock.getId()).toUri();
