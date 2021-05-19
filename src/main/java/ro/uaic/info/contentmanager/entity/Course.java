@@ -1,8 +1,10 @@
 package ro.uaic.info.contentmanager.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
+import java.util.List;
+
 
 @Entity
 public class Course {
@@ -17,6 +19,11 @@ public class Course {
     @ManyToOne
     @JoinColumn(name="subjectId")
     Subject subject;
+
+    @OneToMany(mappedBy = "course")
+    @OrderColumn(name = "position")
+    List<ContentBlock> courseContentBlocks;
+
 
     public Course() {
     }
@@ -57,5 +64,14 @@ public class Course {
 
     public void setSubject(Subject subject) {
         this.subject = subject;
+
+    public List<ContentBlock> getCourseContentBlocks()
+    {
+        return courseContentBlocks;
+    }
+
+    public void setCourseContentBlocks(List<ContentBlock> courseContentBlocks)
+    {
+        this.courseContentBlocks = courseContentBlocks;
     }
 }
