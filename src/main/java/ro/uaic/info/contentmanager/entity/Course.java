@@ -16,6 +16,7 @@ public class Course {
 
     private String pageTitle;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="subjectId")
     Subject subject;
@@ -64,6 +65,7 @@ public class Course {
 
     public void setSubject(Subject subject) {
         this.subject = subject;
+    }
 
     public List<ContentBlock> getCourseContentBlocks()
     {

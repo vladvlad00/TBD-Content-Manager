@@ -14,7 +14,6 @@ public class Subject {
 
     private String name;
 
-    @JsonIgnore
     @OneToMany(mappedBy="subject")
     Set<Course> subjectCourses;
 
