@@ -77,9 +77,15 @@ public class SubjectCourseController {
         Subject subject=subjectOpt.get();
         Course course=courseOpt.get();
 
-        if(!subject.getSubjectCourses().contains(course)&&
-         course.getSubject().equals(subject)){
+        if(!subject.getSubjectCourses().contains(course)||
+         !course.getSubject().equals(subject)){
             return ResponseEntity.badRequest().build();
         }
+        subject.getSubjectCourses().remove(course);
+        course.setSubject(null);
+
+        subjectRepository.save(subject);
+        courseRepository.save(course);
+        return ResponseEntity.noContent().build();
     }
 }
