@@ -24,7 +24,6 @@ public class ContentBlock {
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "courseId")
-    @MapsId("courseId")
     Course course;
 
     public ContentBlock()
